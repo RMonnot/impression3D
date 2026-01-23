@@ -20,6 +20,8 @@ diametre_trou_chassis = 4.2;           // Diamètre trou M4 avec jeu
 diametre_fraisage = 8.5;               // Diamètre pour tête de vis fraisée
 profondeur_fraisage = 2.5;             // Profondeur du fraisage
 
+profondeur_fraisage_chassis = 3.2;       // Profondeur du fraisage du chassis
+
 // PARAMÈTRES - Plaque adaptateur
 longueur_plaque = 180;                 // Longueur totale de la plaque
 hauteur_plaque = 50;                   // Hauteur totale de la plaque
@@ -43,8 +45,8 @@ module plaque_base() {
 
 module trous_meanwell() {
     // Centrage des trous Mean Well
-    offset_x = (longueur_plaque - espacement_meanwell_horizontal) / 2;
-    offset_y = (hauteur_plaque - espacement_meanwell_vertical) / 2;
+    offset_x = (longueur_plaque - espacement_chassis_horizontal) / 2;
+    offset_y = (hauteur_plaque - espacement_chassis_vertical) / 2;
     
     for (i = [0:1]) {
         for (j = [0:1]) {
@@ -52,8 +54,14 @@ module trous_meanwell() {
                 offset_x + i * espacement_meanwell_horizontal,
                 offset_y + j * espacement_meanwell_vertical,
                 -1
-            ])
-            cylinder(h = epaisseur_plaque + 2, d = diametre_trou_meanwell);
+            ]){
+                cylinder(h = epaisseur_plaque + 2, d = diametre_trou_meanwell);
+                if(i == 1 || (i==0 && j ==1)){
+                    // Fraisage pour tête de vis
+                    translate([0, 0, epaisseur_plaque - profondeur_fraisage + 1])
+                    cylinder(h = profondeur_fraisage + 1, d = diametre_fraisage);
+                }
+            }
         }
     }
 }
@@ -74,8 +82,9 @@ module trous_chassis() {
                 cylinder(h = epaisseur_plaque + 2, d = diametre_trou_chassis);
                 
                 // Fraisage pour tête de vis
-                translate([0, 0, epaisseur_plaque - profondeur_fraisage + 1])
-                cylinder(h = profondeur_fraisage + 1, d = diametre_fraisage);
+                if(i == 1 || (i==0 && j ==1)){
+                cylinder(h = profondeur_fraisage_chassis, d = diametre_fraisage);
+                }
             }
         }
     }
